@@ -20,6 +20,9 @@ export class Todo {
     @Column()
     title: string;
 
+    @Column({nullable: true})
+    description: string;
+
     @Column({default: false})
     completed: boolean;
 

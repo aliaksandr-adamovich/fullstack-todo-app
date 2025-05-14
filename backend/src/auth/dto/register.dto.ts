@@ -22,8 +22,4 @@ export class RegisterDto {
     @MinLength(6)
     password: string;
 
-    @ApiProperty()
-    @IsString()
-    @MinLength(6)
-    confirmPassword: string;
 }
