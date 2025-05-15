@@ -10,9 +10,9 @@ import {
 } from '@/lib/queries';
 import {Modal} from '@/components/ui/Modal';
 import {Sidebar} from '@/components/ui/Sidebar';
+import {CreateTodoModal} from './components/CreateTodoModal';
 import {Todo} from '@/lib/types';
 import {FiX} from 'react-icons/fi';
-
 
 export default function TodosPage() {
     const router = useRouter();
@@ -21,25 +21,15 @@ export default function TodosPage() {
     const deleteTodo = useDeleteTodo();
     const updateTodo = useUpdateTodo();
 
-    const [title, setTitle] = useState('');
-    const [desc, setDesc] = useState('');
-
+    const [showCreateModal, setShowCreateModal] = useState(false);
     const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
     const [tempTitle, setTempTitle] = useState('');
     const [tempDesc, setTempDesc] = useState('');
-
     const [todoToDelete, setTodoToDelete] = useState<number | null>(null);
 
     useEffect(() => {
         if (error) router.push('/login');
     }, [error, router]);
-
-    const handleAdd = () => {
-        if (!title.trim()) return;
-        addTodo.mutate({title, description: desc});
-        setTitle('');
-        setDesc('');
-    };
 
     const confirmDelete = () => {
         if (todoToDelete !== null) {
@@ -69,7 +59,39 @@ export default function TodosPage() {
 
     return (
         <div style={{padding: '2rem', maxWidth: '700px', margin: '0 auto'}}>
-            <h2 style={{textAlign: 'center', marginBottom: '1.5rem'}}>Ваши задачи</h2>
+
+            <div
+                style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: '1.5rem',
+                }}
+            >
+                <h2 style={{margin: 0}}>Ваши задачи</h2>
+
+                <button
+                    onClick={() => setShowCreateModal(true)}
+                    style={{
+                        padding: '10px 16px',
+                        fontSize: '16px',
+                        backgroundColor: '#0070f3',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                    }}
+                >
+                    ➕ Новая задача
+                </button>
+                {/* Модалка создания */}
+                {showCreateModal && (
+                    <CreateTodoModal
+                        onAdd={(data) => addTodo.mutate(data)}
+                        onClose={() => setShowCreateModal(false)}
+                    />
+                )}
+            </div>
 
 
             {todos?.length ? (
@@ -87,15 +109,26 @@ export default function TodosPage() {
                                 alignItems: 'center',
                             }}
                         >
-                            <div onClick={() => openSidebar(todo)} style={{cursor: 'pointer', flex: 1}}>
+                            <div
+                                onClick={() => openSidebar(todo)}
+                                style={{cursor: 'pointer', flex: 1}}
+                            >
                                 <strong>{todo.title}</strong>
                                 {todo.description && (
                                     <p style={{margin: 0, fontSize: '14px'}}>{todo.description}</p>
                                 )}
                             </div>
-                            <button onClick={() => setTodoToDelete(todo.id)}
-                                    style={{background: 'none', border: 'none'}}>
-                                <FiX style={{fontSize: '18px', color: '#900', cursor: 'pointer'}}>✖</FiX>
+                            <button
+                                onClick={() => setTodoToDelete(todo.id)}
+                                style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    padding: '4px',
+                                    cursor: 'pointer',
+                                }}
+                                title="Удалить задачу"
+                            >
+                                <FiX style={{fontSize: '18px', color: '#900'}}/>
                             </button>
                         </li>
                     ))}
