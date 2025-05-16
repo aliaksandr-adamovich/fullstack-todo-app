@@ -6,15 +6,17 @@ interface SidebarProps {
     onClose: () => void;
 }
 
-export function Sidebar({ title = '', children, onClose }: SidebarProps) {
+export function Sidebar({title = '', children, onClose}: SidebarProps) {
     return (
-        <div style={overlayStyle}>
+        <div style={overlayStyle} onClick={(e) => e.target === e.currentTarget && onClose()}>
             <div style={sidebarStyle}>
                 <div style={headerStyle}>
-                    <h3>{title}</h3>
+                    <h3 style={{margin: 0}}>{title}</h3>
                     <button onClick={onClose} style={closeButtonStyle}>✖</button>
                 </div>
-                <div>{children}</div>
+                <div style={{display: 'flex', flexDirection: 'column', gap: '1rem'}}>
+                    {children}
+                </div>
             </div>
         </div>
     );
@@ -30,18 +32,18 @@ const overlayStyle: React.CSSProperties = {
 };
 
 const sidebarStyle: React.CSSProperties = {
-    width: '350px',
+    width: '360px',
     height: '100%',
     background: '#fff',
     padding: '1.5rem',
-    boxShadow: '-4px 0 20px rgba(0,0,0,0.1)',
+    boxShadow: '-4px 0 20px rgba(0,0,0,0.15)',
+    animation: 'slideIn 0.3s ease forwards',
 };
 
 const headerStyle: React.CSSProperties = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '1rem',
 };
 
 const closeButtonStyle: React.CSSProperties = {
@@ -49,4 +51,5 @@ const closeButtonStyle: React.CSSProperties = {
     border: 'none',
     fontSize: '1.25rem',
     cursor: 'pointer',
+    color: '#888',
 };

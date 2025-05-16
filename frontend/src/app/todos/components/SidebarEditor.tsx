@@ -1,10 +1,6 @@
-import {useEffect, useState} from 'react';
-
-interface Todo {
-    id: number;
-    title: string;
-    description?: string;
-}
+import {Sidebar} from '@/components/ui/Sidebar';
+import React, {useEffect, useState} from "react";
+import {Todo} from "@/lib/types";
 
 interface SidebarEditorProps {
     todo: Todo;
@@ -20,48 +16,41 @@ export function SidebarEditor({todo, onUpdate, onClose}: SidebarEditorProps) {
         const timeout = setTimeout(() => {
             onUpdate({...todo, title, description});
         }, 500);
-
         return () => clearTimeout(timeout);
     }, [title, description]);
 
     return (
-        <div style={wrapperStyle}>
-            <div style={sidebarStyle}>
-                <div style={{display: 'flex', justifyContent: 'space-between'}}>
-                    <h3>Редактирование</h3>
-                    <button onClick={onClose}>✖</button>
-                </div>
-                <input
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Заголовок"
-                />
-                <textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Описание"
-                    style={{marginTop: '1rem'}}
-                />
-            </div>
-        </div>
+        <Sidebar title="Редактирование" onClose={onClose}>
+            <input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Заголовок"
+                style={inputStyle}
+            />
+            <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Описание"
+                style={textareaStyle}
+            />
+        </Sidebar>
     );
-}
 
-const wrapperStyle: React.CSSProperties = {
-    position: 'fixed',
-    inset: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
-    display: 'flex',
-    justifyContent: 'flex-end',
-    zIndex: 1000,
+
+}
+const inputStyle: React.CSSProperties = {
+    padding: '12px',
+    fontSize: '15px',
+    borderRadius: '8px',
+    border: '1px solid #ccc',
+    outline: 'none',
+    backgroundColor: '#fff',
+    color: '#000',
+    fontFamily: 'sans-serif',
 };
 
-const sidebarStyle: React.CSSProperties = {
-    background: '#fff',
-    width: '350px',
-    height: '100%',
-    padding: '1.5rem',
-    boxShadow: '-2px 0 10px rgba(0,0,0,0.1)',
-    display: 'flex',
-    flexDirection: 'column',
+const textareaStyle: React.CSSProperties = {
+    ...inputStyle,
+    height: '100px',
+    resize: 'none',
 };

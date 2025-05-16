@@ -9,8 +9,8 @@ import {
     useUpdateTodo,
 } from '@/lib/queries';
 import {Modal} from '@/components/ui/Modal';
-import {Sidebar} from '@/components/ui/Sidebar';
 import {CreateTodoModal} from './components/CreateTodoModal';
+import {SidebarEditor} from './components/SidebarEditor';
 import {Todo} from '@/lib/types';
 import {FiX} from 'react-icons/fi';
 
@@ -23,8 +23,6 @@ export default function TodosPage() {
 
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
-    const [tempTitle, setTempTitle] = useState('');
-    const [tempDesc, setTempDesc] = useState('');
     const [todoToDelete, setTodoToDelete] = useState<number | null>(null);
 
     useEffect(() => {
@@ -38,28 +36,8 @@ export default function TodosPage() {
         }
     };
 
-    const openSidebar = (todo: Todo) => {
-        setEditingTodo(todo);
-        setTempTitle(todo.title);
-        setTempDesc(todo.description || '');
-    };
-
-    const saveEdit = () => {
-        if (editingTodo) {
-            updateTodo.mutate({
-                id: editingTodo.id,
-                title: tempTitle,
-                description: tempDesc,
-            });
-            setEditingTodo(null);
-        }
-    };
-
-    if (isLoading) return <p style={{textAlign: 'center'}}>Загрузка...</p>;
-
     return (
         <div style={{padding: '2rem', maxWidth: '700px', margin: '0 auto'}}>
-
             <div
                 style={{
                     display: 'flex',
@@ -84,7 +62,7 @@ export default function TodosPage() {
                 >
                     ➕ Новая задача
                 </button>
-                {/* Модалка создания */}
+
                 {showCreateModal && (
                     <CreateTodoModal
                         onAdd={(data) => addTodo.mutate(data)}
@@ -92,7 +70,6 @@ export default function TodosPage() {
                     />
                 )}
             </div>
-
 
             {todos?.length ? (
                 <ul style={{listStyle: 'none', padding: 0}}>
@@ -110,7 +87,7 @@ export default function TodosPage() {
                             }}
                         >
                             <div
-                                onClick={() => openSidebar(todo)}
+                                onClick={() => setEditingTodo(todo)}
                                 style={{cursor: 'pointer', flex: 1}}
                             >
                                 <strong>{todo.title}</strong>
@@ -150,21 +127,11 @@ export default function TodosPage() {
             )}
 
             {editingTodo && (
-                <Sidebar title="Редактирование" onClose={() => setEditingTodo(null)}>
-                    <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem'}}>
-                        <input
-                            value={tempTitle}
-                            onChange={(e) => setTempTitle(e.target.value)}
-                            placeholder="Заголовок"
-                        />
-                        <textarea
-                            value={tempDesc}
-                            onChange={(e) => setTempDesc(e.target.value)}
-                            placeholder="Описание"
-                        />
-                        <button onClick={saveEdit}>Сохранить</button>
-                    </div>
-                </Sidebar>
+                <SidebarEditor
+                    todo={editingTodo}
+                    onClose={() => setEditingTodo(null)}
+                    onUpdate={(updated) => updateTodo.mutate(updated)}
+                />
             )}
         </div>
     );
